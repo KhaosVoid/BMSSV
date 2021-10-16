@@ -436,7 +436,7 @@ proc parse_tv {} {
         }
 
         0xF6EA0DBA9BF734BF {
-            # String, FLAG terminated
+            # String, null-terminated
             cstr "utf8" "String F6"
         }
         
