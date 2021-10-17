@@ -168,10 +168,14 @@ proc parse_tv {} {
         0x6C83AF6F9CA85C5A {
             # Root item (userdata.bmssv)
             section "Header" {
-                uint16 "Version1?"
-                uint16 "Version2?"
+                uint16 "Version?"
+                set num_records [uint16 "Number of Records"]
             }
-            parse_tv
+            for { set i 0 } { $i < $num_records } { incr i } {
+                section "Root Record $i" {
+                    parse_tv
+                }
+            }
         }
         
         0x6FF3E71C57D6839C {
@@ -351,10 +355,14 @@ proc parse_tv {} {
         0xD0BE2F66278BC819 {
             # Root item (common.bmssv, pkprfl.bmssv, samus.bmssv)
             section "Header" {
-                uint16 "Version1?"
-                uint16 "Version2?"
+                uint16 "Version?"
+                set num_records [uint16 "Number of Records"]
             }
-            parse_tv
+            for { set i 0 } { $i < $num_records } { incr i } {
+                section "Root Record $i" {
+                    parse_tv
+                }
+            }
         }
         
         0xD1A8336890B4BBDD {
