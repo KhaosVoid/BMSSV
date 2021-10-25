@@ -380,26 +380,32 @@ proc parse_tv {} {
         }
         
         0xC897DE38447F5CF2 {
-            # ??? WATER_VOLUMES / LAVA_VOLUMES
-            set num_records [uint32 "Number of Volumes"]
-            for { set i 0 } { $i < $num_records } { incr i } {
-                section "Volume $i" {
-                    sectionvalue [cstr "utf8"]
-                    set num_props [uint32 "Number of Properties"]
-                    for { set j 0 } { $j < $num_props } { incr j } {
-                        parse_tv
+            # base::global::CRntSmallDictionary<base::global::CStrId, base::spatial::CAABox2D> (Water-/Lava-Volumes)
+            section "CRntSmallDictionary<CStrId, CAABox2D>" {
+                set num_records [uint32]
+                sectionvalue "$num_records entries"
+                for { set i 0 } { $i < $num_records } { incr i } {
+                    section "CRntSmallDict $i" {
+                        sectionvalue [cstr "utf8"]
+                        set num_props [uint32 "Number of Properties"]
+                        for { set j 0 } { $j < $num_props } { incr j } {
+                            parse_tv
+                        }
                     }
                 }
             }
         }
         
         0xCADF3A163B607F5B {
-            # ??? Occluder Vignettes
-            set num_records [uint32 "Number of Vignettes"]
-            for { set i 0 } { $i < $num_records } { incr i } {
-                section "Vignette $i" {
-                    sectionvalue [cstr "utf8"]
-                    int8 -hex "Boolean"
+            # base::global::CRntSmallDictionary<base::global::CStrId, bool> (Occluder Vignettes)
+            section "CRntSmallDictionary<CStrId, bool>" {
+                set num_records [uint32]
+                sectionvalue "$num_records entries"
+                for { set i 0 } { $i < $num_records } { incr i } {
+                    section "CRntSmallDict $i" {
+                        sectionvalue [cstr "utf8"]
+                        int8 -hex "Boolean"
+                    }
                 }
             }
         }
