@@ -5,7 +5,29 @@ little_endian
 
 if [catch {
 
-# Type-Value schema
+# Basic structures - to be reused
+proc CStrId {{suffix ""}} {
+    if {$suffix != ""} {
+        set suffix " $suffix"
+    }
+    cstr "utf8" "CStrId$suffix"
+}
+
+proc bool {} {
+    int8 -hex "bool"
+}
+
+proc CAABox2D {} {
+    section "CAABox2D" {
+        set num_records [uint32]
+        sectionvalue "$num_records entries"
+        for { set i 0 } { $i < $num_records } { incr i } {
+            parse_tv
+        }
+    }
+}
+
+# Type-Value schema - main parser
 proc parse_tv {} {
     set type_id [hex 8]
     switch $type_id {
@@ -141,14 +163,14 @@ proc parse_tv {} {
                 set num_strings [uint32]
                 sectionvalue "$num_strings entries"
                 for { set i 0 } { $i < $num_strings } { incr i } {
-                    cstr "utf8" "CStrId $i"
+                    CStrId $i
                 }
             }
         }
 
         0x2B1A8B33DE7B0C6A {
             # bool
-            int8 -hex "bool"
+            bool
         }
         
         0x2F6D2F820BE625FA {
@@ -337,13 +359,7 @@ proc parse_tv {} {
 
         0xBDAA54365AE550F4 {
             # base::spatial::CAABox2D (MiniMap Area)
-            section "CAABox2D" {
-                set num_records [uint32]
-                sectionvalue "$num_records entries"
-                for { set i 0 } { $i < $num_records } { incr i } {
-                    parse_tv
-                }
-            }
+            CAABox2D
         }
         
         0xBF450D514E81EB1B {
@@ -387,10 +403,7 @@ proc parse_tv {} {
                 for { set i 0 } { $i < $num_records } { incr i } {
                     section "CRntSmallDict $i" {
                         sectionvalue [cstr "utf8"]
-                        set num_props [uint32 "Number of Properties"]
-                        for { set j 0 } { $j < $num_props } { incr j } {
-                            parse_tv
-                        }
+                        CAABox2D
                     }
                 }
             }
@@ -404,7 +417,7 @@ proc parse_tv {} {
                 for { set i 0 } { $i < $num_records } { incr i } {
                     section "CRntSmallDict $i" {
                         sectionvalue [cstr "utf8"]
-                        int8 -hex "Boolean"
+                        bool
                     }
                 }
             }
@@ -544,7 +557,7 @@ proc parse_tv {} {
 
         0xF6EA0DBA9BF734BF {
             # base::global::CStrId
-            cstr "utf8" "CStrId"
+            CStrId
         }
         
         0xF9304C6C1D1D55FA {
@@ -559,10 +572,6 @@ proc parse_tv {} {
                 float "Y"
                 float "Z"
             }
-            ###########################################################
-            ### TODO
-            ###########################################################
-            
         }
         
         default {
